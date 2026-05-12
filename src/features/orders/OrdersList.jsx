@@ -4,7 +4,8 @@ export default function OrdersList({
   orders,
   selectedOrderId,
   setSelectedOrderId,
-  onUpdateStatus
+  onUpdateStatus,
+  setEditingOrder
 }) {
   return (
     <section>
@@ -17,6 +18,7 @@ export default function OrdersList({
             setSelectedOrderId(selectedOrderId === order.id ? null : order.id)
           }
           onUpdateStatus={onUpdateStatus}
+          setEditingOrder={setEditingOrder}
         />
       ))}
     </section>

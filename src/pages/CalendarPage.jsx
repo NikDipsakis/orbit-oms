@@ -1,23 +1,24 @@
-import {
-  Calendar as BigCalendar,
-  dateFnsLocalizer,
-} from 'react-big-calendar';
+// Calendar.jsx
 
-import format from 'date-fns/format';
-import parse from 'date-fns/parse';
-import startOfWeek from 'date-fns/startOfWeek';
-import getDay from 'date-fns/getDay';
+import { Calendar as BigCalendar, dateFnsLocalizer } from "react-big-calendar";
 
-import { enUS } from 'date-fns/locale';
+import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 
-import 'react-big-calendar/lib/css/react-big-calendar.css';
+import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import format from "date-fns/format";
+import parse from "date-fns/parse";
+import startOfWeek from "date-fns/startOfWeek";
+import getDay from "date-fns/getDay";
 
-import { useState } from 'react';
+import { enUS } from "date-fns/locale";
 
-import CalendarPanel from '../features/calendar/CalendarPanel';
+import { useState } from "react";
+
+import CalendarPanel from "../features/calendar/CalendarPanel";
 
 const locales = {
-  'en-US': enUS,
+  "en-US": enUS,
 };
 
 const localizer = dateFnsLocalizer({
@@ -27,69 +28,80 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 });
+// console.log(withDragAndDrop);
 
-export default function Calendar({
-  orders,
-}) {
-  const [selectedDate, setSelectedDate] =
-    useState(null);
+const DnDCalendar = withDragAndDrop.default
+  ? withDragAndDrop.default(BigCalendar)
+  : withDragAndDrop(BigCalendar);
 
-  const calendarEvents = orders.map(
-    (order) => ({
-      title: order.customer.name,
+export default function Calendar({ orders, onUpdate }) {
+  const [selectedDate, setSelectedDate] = useState(null);
 
-      start: new Date(
-        order.customer.deliveryDate
-      ),
+  const calendarEvents = orders.map((order) => ({
+    id: order.id,
 
-      end: new Date(
-        order.customer.deliveryDate
-      ),
+    title: order.customer.name,
 
-      order,
-    })
-  );
+    start: new Date(order.customer.deliveryDate),
+
+    end: new Date(order.customer.deliveryDate),
+
+    order,
+  }));
 
   const selectedOrders = selectedDate
     ? orders.filter((order) => {
-        const orderDate = new Date(
-          order.customer.deliveryDate
-        );
+        const orderDate = new Date(order.customer.deliveryDate);
 
-        return (
-          orderDate.toDateString() ===
-          selectedDate.toDateString()
-        );
+        return orderDate.toDateString() === selectedDate.toDateString();
       })
     : [];
 
+  function eventDropHandler({ event, start }) {
+    const updatedOrder = {
+      ...event.order,
+
+      customer: {
+        ...event.order.customer,
+
+        deliveryDate: start.toISOString(),
+      },
+    };
+
+    onUpdate(updatedOrder);
+  }
+
   return (
-    <section>
+    <section className="calendar-page">
       <h1>Calendar</h1>
 
-      <BigCalendar
-        localizer={localizer}
-        events={calendarEvents}
-        startAccessor='start'
-        endAccessor='end'
-        style={{ height: 700 }}
-        selectable
-        onSelectSlot={(slotInfo) => {
-          setSelectedDate(slotInfo.start);
-        }}
-        onSelectEvent={(event) => {
-          setSelectedDate(event.start);
-        }}
-      />
+      <div className="calendar-layout">
+        <div className="calendar-main">
+          <DnDCalendar
+            localizer={localizer}
+            events={calendarEvents}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: 750 }}
+            selectable
+            onSelectSlot={(slotInfo) => {
+              setSelectedDate(slotInfo.start);
+            }}
+            onSelectEvent={(event) => {
+              setSelectedDate(event.start);
+            }}
+            onEventDrop={eventDropHandler}
+            draggableAccessor={() => true}
+          />
+        </div>
 
-      {selectedDate && (
-        <CalendarPanel
-          selectedDate={selectedDate}
-          selectedOrders={
-            selectedOrders
-          }
-        />
-      )}
+        {selectedDate && (
+          <CalendarPanel
+            selectedDate={selectedDate}
+            selectedOrders={selectedOrders}
+          />
+        )}
+      </div>
     </section>
   );
 }

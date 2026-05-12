@@ -6,6 +6,7 @@ export default function CustomerInputs({
   searchSuggestion,
   setSearchSuggestion,
   setCustomerData,
+  handleSuggestionEnter
 }) {
   return (
     <section>
@@ -16,6 +17,7 @@ export default function CustomerInputs({
           placeholder='Customer'
           value={data.name}
           onChange={changeHandler}
+          onKeyDown={handleSuggestionEnter}
         />
         <CustomerAutocomplete
           customerData={data}
@@ -78,6 +80,7 @@ export default function CustomerInputs({
         placeholder='AFM'
         value={data.afm}
         onChange={changeHandler}
+        onKeyDown={handleSuggestionEnter}
       />
 
       <textarea

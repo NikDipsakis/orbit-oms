@@ -1,13 +1,12 @@
 // App.jsx
 
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useState } from "react";
 
-import AppLayout from './app/AppLayout.jsx';
-
-import Orders from './pages/Orders.jsx';
-import NewOrder from './pages/NewOrder.jsx';
-import CalendarPage from './pages/CalendarPage.jsx';
+import AppLayout from "./app/AppLayout.jsx";
+import Orders from "./pages/Orders.jsx";
+import NewOrder from "./pages/NewOrder.jsx";
+import CalendarPage from "./pages/CalendarPage.jsx";
 
 export default function App() {
   const [orders, setOrders] = useState([]);
@@ -37,29 +36,44 @@ export default function App() {
     );
   }
 
+  function updateOrderHandler(updatedOrder) {
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order.id === updatedOrder.id ? updatedOrder : order,
+      ),
+    );
+  }
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<Navigate to='/dashboard' />} />
+        <Route path="/" element={<Navigate to="/dashboard" />} />
 
-        <Route path='/' element={<AppLayout />}>
-          <Route path='dashboard' element={<h1>Dashboard</h1>} />
+        <Route path="/" element={<AppLayout />}>
+          <Route path="dashboard" element={<h1>Dashboard</h1>} />
 
           <Route
-            path='orders'
+            path="orders"
             element={
               <Orders
                 orders={orders}
+                onAdd={addOrderHandler}
+                onUpdate={updateOrderHandler}
                 onUpdateStatus={updateOrderStatusHandler}
               />
             }
           />
 
           <Route
-            path='orders/new'
+            path="orders/new"
             element={<NewOrder onAddOrder={addOrderHandler} />}
           />
-          <Route path='calendar' element={<CalendarPage orders={orders} />} />
+          <Route
+            path="calendar"
+            element={
+              <CalendarPage orders={orders} onUpdate={updateOrderHandler} />
+            }
+          />
         </Route>
       </Routes>
     </BrowserRouter>

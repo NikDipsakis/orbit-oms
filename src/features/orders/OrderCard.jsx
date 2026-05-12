@@ -1,6 +1,13 @@
-import products from '../../data/products.js';
+import products from "../../data/products.js";
 
-export default function OrderCard({ order, isSelected, onSelect, onUpdateStatus }) {
+export default function OrderCard({
+  order,
+  isSelected,
+  onSelect,
+  onUpdateStatus,
+  setEditingOrder,
+}) {
+  console.log(order);
   return (
     <div onClick={onSelect}>
       <p>{order.customer.name}</p>
@@ -11,15 +18,30 @@ export default function OrderCard({ order, isSelected, onSelect, onUpdateStatus 
 
       {isSelected && (
         <div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+
+              setEditingOrder(order);
+            }}
+          >
+            Edit Order
+          </button>
           <p>{order.customer.phone}</p>
 
           <p>{order.customer.address}</p>
 
-          <button onClick={() => onUpdateStatus(order.id, 'pending')}>Pending</button>
-          <button onClick={() => onUpdateStatus(order.id, 'completed')}>
+          <p>{order.customer.afm}</p>
+
+          {!order.vat && !order.customer.afm && <p>Blue</p>}
+
+          <button onClick={() => onUpdateStatus(order.id, "pending")}>
+            Pending
+          </button>
+          <button onClick={() => onUpdateStatus(order.id, "completed")}>
             Completed
           </button>
-          <button onClick={() => onUpdateStatus(order.id, 'cancelled')}>
+          <button onClick={() => onUpdateStatus(order.id, "cancelled")}>
             Cancelled
           </button>
 

@@ -6,11 +6,11 @@ export default function CustomerAutocomplete({
   return (
     <>
       {searchSuggestion.length > 0 && (
-        <div className='dropdown-menu'>
+        <div className="dropdown-menu">
           {searchSuggestion.map((customer) => (
             <div
-              key={customer.id}
-              className='dropdown-item'
+              key={customer.afm || customer.phone || customer.name}
+              className="dropdown-item"
               onClick={() => {
                 setCustomerData((prevData) => ({
                   ...prevData,
